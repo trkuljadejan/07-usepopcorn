@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const tempMovieData = [
     {
@@ -50,46 +50,9 @@ const tempWatchedData = [
 const average = (arr) =>
     arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const key = '4fbc0782'
-
 export default function App() {
-    const [movies, setMovies] = useState([]);
-    const [watched, setWatched] = useState([]);
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState('')
-    const querry = 'green'
-
-    useEffect(function () {
-        // fetch(`http://www.omdbapi.com/?apikey=${key}&s=green`)
-        //     .then((res) => res.json())
-        //     .then(data => setMovies(data.Search))
-
-        async function fetchMovies() {
-            try {
-                setIsLoading(true)
-                const res = await fetch(`http://www.omdbapi.com/?apikey=${key}&s=${querry}`)
-
-                if (!res.ok) {
-                    throw new Error('Puko net...')
-                }
-
-                const data = await res.json()
-                console.log(data)
-                if (data.Response === 'False') {
-                    throw new Error('Nema filma finger')
-                }
-
-                setMovies(data.Search)
-            } catch (err) {
-                console.error(err.message)
-                setError(err.message)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        fetchMovies()
-    }, [])
-
+    const [movies, setMovies] = useState(tempMovieData);
+    const [watched, setWatched] = useState(tempWatchedData);
 
     return (
         <>
@@ -100,10 +63,7 @@ export default function App() {
             </NavBar>
             <Main >
                 <Box >
-                    {/* {isLoading ? <Loader /> : <MoviesList movies={movies} />} */}
-                    {isLoading && <Loader />}
-                    {!isLoading && !error && <MoviesList movies={movies} />}
-                    {error && <ErrorMessage message={error} />}
+                    <MoviesList movies={movies} />
                 </Box>
                 <Box>
                     <Summary watched={watched} />
@@ -113,16 +73,6 @@ export default function App() {
 
         </>
     );
-}
-
-function Loader() {
-    return (
-        <p className="loader">Loading...</p>
-    )
-}
-
-function ErrorMessage({ message }) {
-    return (<p className="error">{message}</p>)
 }
 
 function NavBar({ children }) {
@@ -156,7 +106,6 @@ function Search() {
 }
 
 function NumResoults({ movies }) {
-    console.log('NumResoults', movies)
     return (
         <p className="num-results">
             Found <strong>{movies.length}</strong> results
